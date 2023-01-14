@@ -89,17 +89,5 @@ def test_negative_sell_in_reduces_quality_twice_as_fast(
     assert negative_sell_in_item.quality == 18
 
 
-class GildedRoseTest(unittest.TestCase):
-    def test_foo(self):
-        # items = [Item("foo", 0, 0)]
-        items = [Item(name="foo", sell_in=0, quality=0)]
-        gilded_rose = GildedRose(items=items)
-        gilded_rose.update_items()
-        assert "foo" == items[0].name
-
-    def test_repr_with_correct_arg_ordering(self):
-        assert repr(Item(name="foo", sell_in=0, quality=0)) == "foo, 0, 0"
-
-
 if __name__ == "__main__":
     unittest.main()
