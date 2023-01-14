@@ -1,7 +1,5 @@
 from enum import Enum
 
-from pydantic import BaseModel, NonNegativeInt
-
 from item import Item
 
 DEXTERITY_VEST = "+5 Dexterity Vest"
@@ -28,7 +26,10 @@ class PassAppreciationLevel(Enum):
     NORMAL = 0
     HIGH = 1
     EXTREME = 2
-    EXPIRED = 3
+
+
+def clamp(number: int, floor: int, ceiling: int):
+    return max(floor, min(number, ceiling))
 
 
 def get_pass_appreciation_level(sell_in: int) -> PassAppreciationLevel:
@@ -39,9 +40,7 @@ def get_pass_appreciation_level(sell_in: int) -> PassAppreciationLevel:
         and sell_in > EXTREME_PASS_APPRECIATION_SELL_IN
     ):
         return PassAppreciationLevel.HIGH
-    if sell_in <= EXTREME_PASS_APPRECIATION_SELL_IN and sell_in > 0:
-        return PassAppreciationLevel.EXTREME
-    return PassAppreciationLevel.EXPIRED
+    return PassAppreciationLevel.EXTREME
 
 
 def will_degrade_in_quality(item: Item) -> bool:
@@ -52,7 +51,7 @@ def will_degrade_in_quality(item: Item) -> bool:
     )
 
 
-def is_expired(sell_in: int) -> bool:
+def is_item_expired(sell_in: int) -> bool:
     return sell_in <= EXPIRY_THRESHOLD
 
 
@@ -63,24 +62,22 @@ def get_item_quality_increase(item: Item) -> int:
         return 1
 
     pass_appreciation_level = get_pass_appreciation_level(item.sell_in)
+
     if pass_appreciation_level is PassAppreciationLevel.NORMAL:
         return 1
     if pass_appreciation_level is PassAppreciationLevel.HIGH:
         return 2
     if pass_appreciation_level is PassAppreciationLevel.EXTREME:
         return 3
-    if pass_appreciation_level is PassAppreciationLevel.EXPIRED:
-        return -item.quality
-    raise NotImplementedError
+    return -item.quality
 
 
 def get_expired_item_quality_increase(item: Item) -> int:
     if item.name not in GOODS_THAT_APPRECIATES_IN_QUALITY:
-        if item.quality > 0:
-            if item.name not in LEGENDARY_ITEMS:
-                return -1
-        else:
-            return -item.quality
+        if item.name not in LEGENDARY_ITEMS:
+            return -1
+        return -item.quality
+
     return item.quality + 1
 
 
@@ -89,15 +86,21 @@ class GildedRose(BaseModel):
 
     def update_items(self):
         for item in self.items:
-            item.quality = min(
-                get_item_quality_increase(item) + item.quality, MAXIMUM_QUALITY
+            self.update_item(item)
+
+    def update_item(self, item: Item):
+        item.quality = clamp(
+            get_item_quality_increase(item) + item.quality,
+            MINIMUM_QUALITY,
+            MAXIMUM_QUALITY,
+        )
+
+        if item.name not in LEGENDARY_ITEMS:
+            item.sell_in = item.sell_in - 1
+
+        if is_item_expired(item.sell_in):
+            item.quality = clamp(
+                get_expired_item_quality_increase(item) + item.quality,
+                MINIMUM_QUALITY,
+                MAXIMUM_QUALITY,
             )
-
-            if item.name not in LEGENDARY_ITEMS:
-                item.sell_in = item.sell_in - 1
-
-            if is_expired(item.sell_in):
-                item.quality = min(
-                    get_expired_item_quality_increase(item) + item.quality,
-                    MAXIMUM_QUALITY,
-                )
