@@ -11,6 +11,10 @@ class GildedRoseTest(unittest.TestCase):
         gilded_rose.update_quality()
         self.assertEquals("foo", items[0].name)
 
+    def test_repr_with_correct_arg_ordering(self):
+        item = Item("foo", 0, 0)
+        assert repr(item) == "foo, 0, 0"
+
 
 if __name__ == "__main__":
     unittest.main()
