@@ -1,30 +1,28 @@
-from enum import Enum
-
 from pydantic import BaseModel
 
+from app.item import Item
 from constants import (
     BACKSTAGE_PASSES,
     EXPIRY_THRESHOLD,
-    EXTREME_PASS_APPRECIATION_FLOOR,
+    EXTREME_INFLATION_THRESHOLD,
     GOODS_THAT_APPRECIATES_IN_QUALITY,
-    HIGH_PASS_APPRECIATION_FLOOR,
+    HIGH_INFLATION_THRESHOLD,
     LEGENDARY_ITEMS,
     MAXIMUM_QUALITY,
     MINIMUM_QUALITY,
 )
-from enums import PassAppreciationLevel
-from item import Item
+from enums import PassInflationLevel
 from utils import clamp
 
 
-def _get_pass_appreciation_level(sell_in: int) -> PassAppreciationLevel:
-    if sell_in > HIGH_PASS_APPRECIATION_FLOOR:
-        return PassAppreciationLevel.NORMAL
-    if sell_in > EXTREME_PASS_APPRECIATION_FLOOR:
-        return PassAppreciationLevel.HIGH
+def _get_pass_inflation_level(sell_in: int) -> PassInflationLevel:
+    if sell_in > HIGH_INFLATION_THRESHOLD:
+        return PassInflationLevel.NORMAL
+    if sell_in > EXTREME_INFLATION_THRESHOLD:
+        return PassInflationLevel.HIGH
     if sell_in > 0:
-        return PassAppreciationLevel.EXTREME
-    return PassAppreciationLevel.EXPIRED
+        return PassInflationLevel.EXTREME
+    return PassInflationLevel.EXPIRED
 
 
 def _will_degrade_in_quality(item: Item) -> bool:
@@ -45,13 +43,13 @@ def _get_item_quality_increase(item: Item) -> int:
     if item.name != BACKSTAGE_PASSES:
         return 1
 
-    pass_appreciation_level = _get_pass_appreciation_level(item.sell_in)
+    pass_inflation_level = _get_pass_inflation_level(item.sell_in)
 
-    if pass_appreciation_level is PassAppreciationLevel.NORMAL:
+    if pass_inflation_level is PassInflationLevel.NORMAL:
         return 1
-    if pass_appreciation_level is PassAppreciationLevel.HIGH:
+    if pass_inflation_level is PassInflationLevel.HIGH:
         return 2
-    if pass_appreciation_level is PassAppreciationLevel.EXTREME:
+    if pass_inflation_level is PassInflationLevel.EXTREME:
         return 3
     return -item.quality
 

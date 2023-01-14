@@ -128,6 +128,20 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
+name = "isort"
+version = "5.11.4"
+description = "A Python utility / library to sort Python imports."
+category = "main"
+optional = false
+python-versions = ">=3.7.0"
+
+[package.extras]
+colors = ["colorama (>=0.4.3,<0.5.0)"]
+requirements-deprecated-finder = ["pip-api", "pipreqs"]
+pipfile-deprecated-finder = ["pipreqs", "requirementslib"]
+plugins = ["setuptools"]
+
+[[package]]
 name = "mypy-extensions"
 version = "0.4.3"
 description = "Experimental type system extensions for programs checked with the mypy typechecker."
@@ -292,7 +306,7 @@ testing = ["coverage (>=6.2)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "1acd71f570fd42b7275bbc7cba0a5665b11ab17563474445d23636a8d6c13838"
+content-hash = "0f2b7dfab9d3d69e3af07e1f64de591b8dd3199cea973b9b683cb257c149ef33"
 
 [metadata.files]
 attrs = []
@@ -309,6 +323,7 @@ exceptiongroup = []
 filelock = []
 identify = []
 iniconfig = []
+isort = []
 mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},

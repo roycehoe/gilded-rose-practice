@@ -3,8 +3,8 @@ import unittest
 
 import pytest
 
-from gilded_rose import GildedRose
-from item import Item
+from app.gilded_rose import GildedRose
+from app.item import Item
 
 
 @pytest.fixture
