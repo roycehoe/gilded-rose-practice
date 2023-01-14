@@ -21,6 +21,8 @@ EXTREME_PASS_APPRECIATION_SELL_IN = 5
 MAXIMUM_QUALITY = 50
 MINIMUM_QUALITY = 0
 
+EXPIRY_THRESHOLD = 0
+
 
 class PassAppreciationLevel(Enum):
     NORMAL = 0
@@ -50,45 +52,52 @@ def will_degrade_in_quality(item: Item) -> bool:
     )
 
 
-def is_maximum_quality(quality: int) -> bool:
-    return quality >= MAXIMUM_QUALITY
+def is_expired(sell_in: int) -> bool:
+    return sell_in <= EXPIRY_THRESHOLD
 
 
-def get_new_quality(item: Item) -> int:
+def get_item_quality_increase(item: Item) -> int:
     if will_degrade_in_quality(item):
-        return item.quality - 1
+        return -1
     if item.name != BACKSTAGE_PASSES:
-        return item.quality + 1
+        return 1
 
     pass_appreciation_level = get_pass_appreciation_level(item.sell_in)
     if pass_appreciation_level is PassAppreciationLevel.NORMAL:
-        return item.quality + 1
+        return 1
     if pass_appreciation_level is PassAppreciationLevel.HIGH:
-        return item.quality + 2
+        return 2
     if pass_appreciation_level is PassAppreciationLevel.EXTREME:
-        return item.quality + 3
+        return 3
     if pass_appreciation_level is PassAppreciationLevel.EXPIRED:
-        return 0
+        return -item.quality
     raise NotImplementedError
+
+
+def get_expired_item_quality_increase(item: Item) -> int:
+    if item.name not in GOODS_THAT_APPRECIATES_IN_QUALITY:
+        if item.quality > 0:
+            if item.name not in LEGENDARY_ITEMS:
+                return -1
+        else:
+            return -item.quality
+    return item.quality + 1
 
 
 class GildedRose(BaseModel):
     items: list[Item]
 
-    def update_quality(self):
+    def update_items(self):
         for item in self.items:
-            item.quality = min(get_new_quality(item), MAXIMUM_QUALITY)
+            item.quality = min(
+                get_item_quality_increase(item) + item.quality, MAXIMUM_QUALITY
+            )
 
             if item.name not in LEGENDARY_ITEMS:
                 item.sell_in = item.sell_in - 1
 
-            if item.sell_in < 0:
-                if item.name not in GOODS_THAT_APPRECIATES_IN_QUALITY:
-                    if item.quality > 0:
-                        if item.name not in LEGENDARY_ITEMS:
-                            item.quality = item.quality - 1
-                    else:
-                        item.quality = item.quality - item.quality
-                else:
-                    if item.quality < 50:
-                        item.quality = item.quality + 1
+            if is_expired(item.sell_in):
+                item.quality = min(
+                    get_expired_item_quality_increase(item) + item.quality,
+                    MAXIMUM_QUALITY,
+                )

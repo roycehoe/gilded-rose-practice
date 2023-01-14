@@ -45,7 +45,7 @@ def test_item_quality_reduces_by_one(mock_items):
     gilded_rose = GildedRose(items=mock_items)
 
     assert gilded_rose.items[0].quality == 20
-    gilded_rose.update_quality()
+    gilded_rose.update_items()
     assert gilded_rose.items[0].quality == 19
 
 
@@ -58,7 +58,7 @@ def test_backstage_item_increaes_in_quality_as_sell_in_date_approaches_medium_se
     assert backstage_item.name == "Backstage passes to a TAFKAL80ETC concert"
     assert backstage_item.quality == 20
     assert backstage_item.sell_in == 10
-    gilded_rose.update_quality()
+    gilded_rose.update_items()
     assert backstage_item.quality == 22
 
 
@@ -71,7 +71,7 @@ def test_backstage_item_increaes_in_quality_as_sell_in_date_approaches_low_sell_
     assert backstage_item.name == "Backstage passes to a TAFKAL80ETC concert"
     assert backstage_item.quality == 20
     assert backstage_item.sell_in == 5
-    gilded_rose.update_quality()
+    gilded_rose.update_items()
     assert backstage_item.quality == 23
 
 
@@ -84,7 +84,7 @@ def test_negative_sell_in_reduces_quality_twice_as_fast(
     assert negative_sell_in_item.sell_in < 0
     assert negative_sell_in_item.quality == 20
 
-    gilded_rose.update_quality()
+    gilded_rose.update_items()
 
     assert negative_sell_in_item.quality == 18
 
@@ -94,7 +94,7 @@ class GildedRoseTest(unittest.TestCase):
         # items = [Item("foo", 0, 0)]
         items = [Item(name="foo", sell_in=0, quality=0)]
         gilded_rose = GildedRose(items=items)
-        gilded_rose.update_quality()
+        gilded_rose.update_items()
         assert "foo" == items[0].name
 
     def test_repr_with_correct_arg_ordering(self):

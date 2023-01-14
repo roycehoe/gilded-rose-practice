@@ -29,4 +29,4 @@ if __name__ == "__main__":
         for item in items:
             print(item)
         print("")
-        GildedRose(items).update_quality()
+        GildedRose(items).update_items()
