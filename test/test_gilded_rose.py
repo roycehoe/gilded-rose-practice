@@ -41,7 +41,7 @@ def mock_negative_items() -> list[Item]:
 
 
 def test_item_quality_reduces_by_one(mock_items):
-    gilded_rose = GildedRose(mock_items)
+    gilded_rose = GildedRose(items=mock_items)
 
     assert gilded_rose.items[0].quality == 20
     gilded_rose.update_quality()
@@ -51,7 +51,7 @@ def test_item_quality_reduces_by_one(mock_items):
 def test_backstage_item_increaes_in_quality_as_sell_in_date_approaches_medium_sell_in_low_quantity(
     mock_items: list[Item],
 ):
-    gilded_rose = GildedRose(mock_items)
+    gilded_rose = GildedRose(items=mock_items)
     backstage_item = gilded_rose.items[6]
 
     assert backstage_item.name == "Backstage passes to a TAFKAL80ETC concert"
@@ -64,7 +64,7 @@ def test_backstage_item_increaes_in_quality_as_sell_in_date_approaches_medium_se
 def test_backstage_item_increaes_in_quality_as_sell_in_date_approaches_low_sell_in_low_quantity(
     mock_items: list[Item],
 ):
-    gilded_rose = GildedRose(mock_items)
+    gilded_rose = GildedRose(items=mock_items)
     backstage_item = gilded_rose.items[7]
 
     assert backstage_item.name == "Backstage passes to a TAFKAL80ETC concert"
@@ -77,7 +77,7 @@ def test_backstage_item_increaes_in_quality_as_sell_in_date_approaches_low_sell_
 def test_negative_sell_in_reduces_quality_twice_as_fast(
     mock_negative_items: list[Item],
 ):
-    gilded_rose = GildedRose(mock_negative_items)
+    gilded_rose = GildedRose(items=mock_negative_items)
     negative_sell_in_item = gilded_rose.items[0]
 
     assert negative_sell_in_item.sell_in < 0
@@ -90,17 +90,14 @@ def test_negative_sell_in_reduces_quality_twice_as_fast(
 
 class GildedRoseTest(unittest.TestCase):
     def test_foo(self):
-        items = [Item("foo", 0, 0)]
-        gilded_rose = GildedRose(items)
+        # items = [Item("foo", 0, 0)]
+        items = [Item(name="foo", sell_in=0, quality=0)]
+        gilded_rose = GildedRose(items=items)
         gilded_rose.update_quality()
         assert "foo" == items[0].name
 
     def test_repr_with_correct_arg_ordering(self):
-        assert repr(Item("foo", 0, 0)) == "foo, 0, 0"
-
-    # def test_repr_with_wrong_arg_ordering(self):
-    #     with pytest.raises(Exception):
-    #         item = Item(0, 0, "foo")
+        assert repr(Item(name="foo", sell_in=0, quality=0)) == "foo, 0, 0"
 
 
 if __name__ == "__main__":

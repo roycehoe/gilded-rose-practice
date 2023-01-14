@@ -199,6 +199,21 @@ pyyaml = ">=5.1"
 virtualenv = ">=20.10.0"
 
 [[package]]
+name = "pydantic"
+version = "1.10.4"
+description = "Data validation and settings management using python type hints"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+typing-extensions = ">=4.2.0"
+
+[package.extras]
+dotenv = ["python-dotenv (>=0.10.4)"]
+email = ["email-validator (>=1.0.3)"]
+
+[[package]]
 name = "pytest"
 version = "7.2.0"
 description = "pytest: simple powerful testing with Python"
@@ -277,7 +292,7 @@ testing = ["coverage (>=6.2)", "coverage-enable-subprocess (>=1)", "flaky (>=3.7
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "50018b469456844d58444ab6debcf7d9083c183681610bb62dd455a288c503a5"
+content-hash = "1acd71f570fd42b7275bbc7cba0a5665b11ab17563474445d23636a8d6c13838"
 
 [metadata.files]
 attrs = []
@@ -304,6 +319,7 @@ pathspec = []
 platformdirs = []
 pluggy = []
 pre-commit = []
+pydantic = []
 pytest = []
 pytest-cov = []
 pyyaml = []
