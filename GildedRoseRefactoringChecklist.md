@@ -4,7 +4,7 @@
 
 ======================================
 
-- [x] The system lowers both sell in and quantity values for every item
+- [x] The system lowers both sell in and Quality values for every item
 - [ ] Once the sell by date has passed, Quality degrades twice as fast
 - [ ] The Quality of an item is never negative
 - [ ] "Aged Brie" actually increases in Quality the older it gets

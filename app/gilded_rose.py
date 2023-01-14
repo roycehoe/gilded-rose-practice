@@ -33,10 +33,6 @@ def _will_degrade_in_quality(item: Item) -> bool:
     )
 
 
-def _is_item_expired(sell_in: int) -> bool:
-    return sell_in <= EXPIRY_THRESHOLD
-
-
 def _get_item_quality_increase(item: Item) -> int:
     if _will_degrade_in_quality(item):
         return -1
@@ -52,6 +48,10 @@ def _get_item_quality_increase(item: Item) -> int:
     if pass_inflation_level is PassInflationLevel.EXTREME:
         return 3
     return -item.quality
+
+
+def _is_item_expired(sell_in: int) -> bool:
+    return sell_in <= EXPIRY_THRESHOLD
 
 
 def _get_expired_item_quality_increase(item: Item) -> int:
