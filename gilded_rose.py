@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, NonNegativeInt
 
 from item import Item
 
@@ -28,6 +28,7 @@ class PassAppreciationLevel(Enum):
     NORMAL = 0
     HIGH = 1
     EXTREME = 2
+    EXPIRED = 3
 
 
 def clamp(number: int, floor: int, ceiling: int):
@@ -42,7 +43,9 @@ def get_pass_appreciation_level(sell_in: int) -> PassAppreciationLevel:
         and sell_in > EXTREME_PASS_APPRECIATION_SELL_IN
     ):
         return PassAppreciationLevel.HIGH
-    return PassAppreciationLevel.EXTREME
+    if sell_in <= EXTREME_PASS_APPRECIATION_SELL_IN and sell_in > 0:
+        return PassAppreciationLevel.EXTREME
+    return PassAppreciationLevel.EXPIRED
 
 
 def will_degrade_in_quality(item: Item) -> bool:
@@ -76,7 +79,7 @@ def get_item_quality_increase(item: Item) -> int:
 
 def get_expired_item_quality_increase(item: Item) -> int:
     if item.name not in GOODS_THAT_APPRECIATES_IN_QUALITY:
-        if item.name not in LEGENDARY_ITEMS:
+        if item.quality > 0 and item.name not in LEGENDARY_ITEMS:
             return -1
         return -item.quality
 
