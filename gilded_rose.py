@@ -1,5 +1,7 @@
 from enum import Enum
 
+from pydantic import BaseModel
+
 from item import Item
 
 DEXTERITY_VEST = "+5 Dexterity Vest"
