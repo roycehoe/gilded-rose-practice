@@ -18,9 +18,7 @@ from constants import (
 from enums import QualityInflationMultiplier
 from utils import clamp
 
-PASS_INFLATION_TO_QUALITY_INCREASE_MULTIPLIER_MAP: dict[
-    QualityInflationMultiplier, int
-] = {
+PASS_INFLATION_TO_QUALITY_MULTIPLIER_MAP: dict[QualityInflationMultiplier, int] = {
     QualityInflationMultiplier.NORMAL: 1,
     QualityInflationMultiplier.HIGH: 2,
     QualityInflationMultiplier.EXTREME: 3,
@@ -48,7 +46,7 @@ def _get_item_quality_increase(item: Item) -> int:
         return DEFAULT_APPRECIATION
 
     pass_inflation_level = _get_pass_inflation_level(item.sell_in)
-    multiplier = PASS_INFLATION_TO_QUALITY_INCREASE_MULTIPLIER_MAP.get(
+    multiplier = PASS_INFLATION_TO_QUALITY_MULTIPLIER_MAP.get(
         pass_inflation_level, -item.quality
     )
     return DEFAULT_APPRECIATION * multiplier

@@ -5,12 +5,13 @@ from app.gilded_rose import GildedRose
 from app.item import Item
 
 
-def test_update_lowers_sell_in_for_all_non_legendary_items():
+# def test_update_decreases_all_non_legendary_items_sell_in():
+def test_update_non_legendary_items_decreases_sell_in():
     ticket_item = Item(
-        name="Backstage passes to a TAFKAL80ETC concert", sell_in=18, quality=49
+        name="Backstage passes to a TAFKAL80ETC concert", sell_in=18, quality=50
     )
-    non_ticket_appreciable_item = Item(name="Aged Brie", sell_in=1000, quality=0)
-    normal_item = Item(name="+5 Dexterity Vest", sell_in=300, quality=20)
+    non_ticket_appreciable_item = Item(name="Aged Brie", sell_in=1000, quality=50)
+    normal_item = Item(name="+5 Dexterity Vest", sell_in=300, quality=50)
 
     gilded_rose = GildedRose(
         items=[ticket_item, non_ticket_appreciable_item, normal_item]
@@ -22,7 +23,15 @@ def test_update_lowers_sell_in_for_all_non_legendary_items():
     assert gilded_rose.items[2].sell_in == 299
 
 
-def test_update_increases_aged_brie_quality():
+def test_update_legendary_items_keeps_quality_at_80():
+    legendary_item = Item(name="Sulfuras, Hand of Ragnaros", sell_in=10, quality=80)
+    gilded_rose = GildedRose(items=[legendary_item])
+
+    gilded_rose.update_items()
+    assert gilded_rose.items[0].quality == 80
+
+
+def test_update_aged_brie_quality_increase():
     aged_brie_high_sell_in_zero_quality = Item(
         name="Aged Brie", sell_in=1000, quality=0
     )
@@ -45,7 +54,7 @@ def test_update_increases_aged_brie_quality():
     assert gilded_rose.items[2].quality == 1
 
 
-def test_update_increases_backstage_pass_quality_normally_when_there_are_more_than_10_days_in_sell_in():
+def test_update_backstage_pass_quality_increases_normally_if_final_sell_in_is_more_than_10_days():
     backstage_pass_low_sell_in = Item(
         name="Backstage passes to a TAFKAL80ETC concert", sell_in=11, quality=20
     )
@@ -62,7 +71,7 @@ def test_update_increases_backstage_pass_quality_normally_when_there_are_more_th
     assert gilded_rose.items[1].quality == 21
 
 
-def test_update_increases_backstage_pass_quality_twice_as_fast_when_there_are_10_days_or_less_but_more_than_5_days():
+def test_update_backstage_pass_quality_increases_double_if_final_sell_in_is_10_days_or_less_and_not_less_than_5_days():
     backstage_pass_high_sell_in = Item(
         name="Backstage passes to a TAFKAL80ETC concert", sell_in=9, quality=20
     )
@@ -79,7 +88,7 @@ def test_update_increases_backstage_pass_quality_twice_as_fast_when_there_are_10
     assert gilded_rose.items[1].quality == 22
 
 
-def test_update_increases_backstage_pass_quality_thrice_as_fast_when_there_are_5_days_or_less_excluding_zero_days():
+def test_update_backstage_pass_quality_increases_triple_if_final_sell_in_is_5_days_or_less_and_not_less_than_zero():
     backstage_pass_high_sell_in = Item(
         name="Backstage passes to a TAFKAL80ETC concert", sell_in=5, quality=20
     )
@@ -98,7 +107,7 @@ def test_update_increases_backstage_pass_quality_thrice_as_fast_when_there_are_5
     assert gilded_rose.items[1].quality == 23
 
 
-def test_update_increases_backstage_pass_quality_drops_to_zero_days_when_final_sell_in_is_less_or_equal_to_zero():
+def test_update_backstage_pass_quality_decreases_to_zero_if_final_sell_in_is_less_or_equal_to_zero():
     backstage_pass_high_sell_in = Item(
         name="Backstage passes to a TAFKAL80ETC concert", sell_in=1, quality=20
     )
@@ -106,7 +115,7 @@ def test_update_increases_backstage_pass_quality_drops_to_zero_days_when_final_s
         name="Backstage passes to a TAFKAL80ETC concert", sell_in=0, quality=20
     )
     backstage_pass_negative_sell_in = Item(
-        name="Backstage passes to a TAFKAL80ETC concert", sell_in=0, quality=20
+        name="Backstage passes to a TAFKAL80ETC concert", sell_in=-20, quality=20
     )
     gilded_rose = GildedRose(
         items=[
@@ -126,7 +135,7 @@ def test_update_increases_backstage_pass_quality_drops_to_zero_days_when_final_s
     assert gilded_rose.items[2].quality == 0
 
 
-def test_update_cannot_increase_non_legendary_item_quality_above_50():
+def test_update_non_legendary_items_keeps_quality_at_maximum_of_50():
     backstage_pass_normal_appreciation = Item(
         name="Backstage passes to a TAFKAL80ETC concert", sell_in=200, quality=50
     )
@@ -173,7 +182,7 @@ def test_update_cannot_increase_non_legendary_item_quality_above_50():
         assert item.quality <= 50
 
 
-def test_update_does_not_modify_sell_in_for_legendary_items():
+def test_update_legendary_items_keeps_modify_sell_in():
     legendary_item = Item(name="Sulfuras, Hand of Ragnaros", sell_in=10, quality=80)
     gilded_rose = GildedRose(items=[legendary_item])
 
@@ -181,15 +190,7 @@ def test_update_does_not_modify_sell_in_for_legendary_items():
     assert gilded_rose.items[0].sell_in == 10
 
 
-def test_update_keeps_legendary_items_quality_at_80():
-    legendary_item = Item(name="Sulfuras, Hand of Ragnaros", sell_in=10, quality=80)
-    gilded_rose = GildedRose(items=[legendary_item])
-
-    gilded_rose.update_items()
-    assert gilded_rose.items[0].quality == 80
-
-
-def test_normal_items_degrade_twice_as_fast_after_sell_date():
+def test_update_normal_items_decreases_double_after_sell_date():
     normal_item_positive_sell_in = Item(
         name="+5 Dexterity Vest", sell_in=300, quality=50
     )
@@ -206,7 +207,7 @@ def test_normal_items_degrade_twice_as_fast_after_sell_date():
     assert gilded_rose.items[1].quality == 48
 
 
-def test_conjured_items_degrade_twice_as_fast_as_normal_items():
+def test_update_conjured_items_decreases_double_compared_to_normal_items():
     normal_item_positive_sell_in = Item(
         name="+5 Dexterity Vest", sell_in=300, quality=50
     )
