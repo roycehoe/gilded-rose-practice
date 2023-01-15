@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-import pytest
-
 from app.gilded_rose import GildedRose
 from app.item import Item
 
@@ -86,7 +84,7 @@ def test_update_increases_backstage_pass_quality_thrice_as_fast_when_there_are_5
         name="Backstage passes to a TAFKAL80ETC concert", sell_in=5, quality=20
     )
     # Two is the sell_in threshold, not one, because, if it is one, the update would reduce the sell_in
-    # to zero, which makes the ticket worthless. This behaviour will be endorsd in subsequent tests
+    # to zero, which brings the sell-in date to zero, which makes the quality zero. This behaviour will be endorsd in subsequent tests
     backstage_pass_low_sell_in = Item(
         name="Backstage passes to a TAFKAL80ETC concert", sell_in=2, quality=20
     )
@@ -100,7 +98,7 @@ def test_update_increases_backstage_pass_quality_thrice_as_fast_when_there_are_5
     assert gilded_rose.items[1].quality == 23
 
 
-def test_update_increases_backstage_pass_quality_drops_to_zero_days_when_sell_in_is_less_or_equal_to_zero():
+def test_update_increases_backstage_pass_quality_drops_to_zero_days_when_final_sell_in_is_less_or_equal_to_zero():
     backstage_pass_high_sell_in = Item(
         name="Backstage passes to a TAFKAL80ETC concert", sell_in=1, quality=20
     )

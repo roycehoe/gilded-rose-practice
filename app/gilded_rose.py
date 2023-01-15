@@ -4,6 +4,8 @@ from app.item import Item
 from constants import (
     APPRECIABLE_ITEMS,
     BACKSTAGE_PASSES,
+    CONJURED_ITEMS,
+    CONJURED_ITEMS_DEPRECIATION_MULTIPLIER,
     DEFAULT_APPRECIATION,
     DEFAULT_DEPRECIATION,
     EXPIRY_THRESHOLD,
@@ -36,6 +38,9 @@ def _get_pass_inflation_level(sell_in: int) -> QualityInflationMultiplier:
 
 
 def _get_item_quality_increase(item: Item) -> int:
+    if item.name in CONJURED_ITEMS:
+        return DEFAULT_DEPRECIATION * CONJURED_ITEMS_DEPRECIATION_MULTIPLIER
+
     if item.name not in APPRECIABLE_ITEMS:
         return DEFAULT_DEPRECIATION
 
@@ -58,6 +63,8 @@ def _get_expired_item_quality_increase(item: Item) -> int:
         return -item.quality
     if item.name in APPRECIABLE_ITEMS:
         return item.quality + DEFAULT_APPRECIATION
+    if item.name in CONJURED_ITEMS:
+        return DEFAULT_DEPRECIATION * CONJURED_ITEMS_DEPRECIATION_MULTIPLIER
 
     return DEFAULT_DEPRECIATION
 
