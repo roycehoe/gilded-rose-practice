@@ -35,17 +35,10 @@ def _get_pass_inflation_level(sell_in: int) -> QualityInflationMultiplier:
     return QualityInflationMultiplier.NORMAL
 
 
-def _will_degrade_in_quality(item: Item) -> bool:
-    if item.name in LEGENDARY_ITEMS:
-        return False
-    if item.name in APPRECIABLE_ITEMS:
-        return False
-    return True
-
-
 def _get_item_quality_increase(item: Item) -> int:
-    if _will_degrade_in_quality(item):
+    if item.name not in APPRECIABLE_ITEMS:
         return DEFAULT_DEPRECIATION
+
     if item.name != BACKSTAGE_PASSES:
         return DEFAULT_APPRECIATION
 
@@ -61,14 +54,12 @@ def _is_item_expired(sell_in: int) -> bool:
 
 
 def _get_expired_item_quality_increase(item: Item) -> int:
-    if item.name in LEGENDARY_ITEMS:
-        return 0
     if item.name == BACKSTAGE_PASSES:
         return -item.quality
     if item.name in APPRECIABLE_ITEMS:
-        return item.quality + 1
+        return item.quality + DEFAULT_APPRECIATION
 
-    return -1
+    return DEFAULT_DEPRECIATION
 
 
 class GildedRose(BaseModel):
@@ -76,17 +67,18 @@ class GildedRose(BaseModel):
 
     def update_items(self):
         for item in self.items:
-            self.update_item(item)
+            if item.name in LEGENDARY_ITEMS:
+                continue
+            self._update_item(item)
 
-    def update_item(self, item: Item):
+    def _update_item(self, item: Item):
         item.quality = clamp(
             _get_item_quality_increase(item) + item.quality,
             MINIMUM_QUALITY,
             MAXIMUM_QUALITY,
         )
 
-        if item.name not in LEGENDARY_ITEMS:
-            item.sell_in = item.sell_in - 1
+        item.sell_in = item.sell_in - 1
 
         if _is_item_expired(item.sell_in):
             item.quality = clamp(
