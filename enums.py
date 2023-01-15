@@ -1,8 +1,8 @@
 from enum import Enum
 
 
-class PassInflationLevel(Enum):
+class QualityInflationMultiplier(Enum):
     NORMAL = 0
     HIGH = 1
     EXTREME = 2
-    EXPIRED = 3
+    ZERO = 3

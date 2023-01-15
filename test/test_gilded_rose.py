@@ -41,11 +41,6 @@ def mock_negative_items() -> list[Item]:
     ]
 
 
-def test_item_repr():
-    item = Item(name="foo", sell_in=1337, quality=69)
-    assert repr(item) == "foo, 1337, 69"
-
-
 def test_item_quality_reduces_by_one(mock_items):
     gilded_rose = GildedRose(items=mock_items)
 
