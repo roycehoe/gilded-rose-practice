@@ -1,11 +1,7 @@
-# -*- coding: utf-8 -*-
-import unittest
-
 from app.gilded_rose import GildedRose
 from app.item import Item
 
 
-# def test_update_decreases_all_non_legendary_items_sell_in():
 def test_update_non_legendary_items_decreases_sell_in():
     ticket_item = Item(
         name="Backstage passes to a TAFKAL80ETC concert", sell_in=18, quality=50
@@ -236,7 +232,3 @@ def test_update_conjured_items_decreases_double_compared_to_normal_items():
     assert gilded_rose.items[1].quality == 48
     assert gilded_rose.items[2].quality == 48
     assert gilded_rose.items[3].quality == 46
-
-
-if __name__ == "__main__":
-    unittest.main()
