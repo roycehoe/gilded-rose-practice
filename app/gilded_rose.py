@@ -72,11 +72,11 @@ class GildedRose(BaseModel):
 
     def update_items(self):
         for item in self.items:
-            if item.name in LEGENDARY_ITEMS:
-                continue
             self._update_item(item)
 
-    def _update_item(self, item: Item):
+    def _update_item(self, item: Item) -> None:
+        if item.name in LEGENDARY_ITEMS:
+            return
         item.quality = clamp(
             _get_item_quality_increase(item) + item.quality,
             MINIMUM_QUALITY,
@@ -85,9 +85,10 @@ class GildedRose(BaseModel):
 
         item.sell_in = item.sell_in - 1
 
-        if _is_item_expired(item.sell_in):
-            item.quality = clamp(
-                _get_expired_item_quality_increase(item) + item.quality,
-                MINIMUM_QUALITY,
-                MAXIMUM_QUALITY,
-            )
+        if not _is_item_expired(item.sell_in):
+            return
+        item.quality = clamp(
+            _get_expired_item_quality_increase(item) + item.quality,
+            MINIMUM_QUALITY,
+            MAXIMUM_QUALITY,
+        )
