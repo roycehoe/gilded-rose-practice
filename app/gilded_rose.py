@@ -25,7 +25,7 @@ PASS_INFLATION_TO_QUALITY_MULTIPLIER_MAP: dict[QualityInflationMultiplier, int] 
 }
 
 
-def _get_pass_inflation_level(sell_in: int) -> QualityInflationMultiplier:
+def _get_quality_inflation_level(sell_in: int) -> QualityInflationMultiplier:
     if sell_in <= EXPIRY_THRESHOLD:
         return QualityInflationMultiplier.ZERO
     if sell_in <= EXTREME_INFLATION_THRESHOLD:
@@ -33,6 +33,19 @@ def _get_pass_inflation_level(sell_in: int) -> QualityInflationMultiplier:
     if sell_in <= HIGH_INFLATION_THRESHOLD:
         return QualityInflationMultiplier.HIGH
     return QualityInflationMultiplier.NORMAL
+
+
+def _get_appreciable_item_quality_increase(appreciable_item: Item) -> int:
+    if appreciable_item.name != BACKSTAGE_PASSES:
+        return DEFAULT_APPRECIATION
+
+    backstage_pass_inflation_level = _get_quality_inflation_level(
+        appreciable_item.sell_in
+    )
+    multiplier = PASS_INFLATION_TO_QUALITY_MULTIPLIER_MAP.get(
+        backstage_pass_inflation_level, -appreciable_item.quality
+    )
+    return DEFAULT_APPRECIATION * multiplier
 
 
 def _get_item_quality_increase(item: Item) -> int:
@@ -45,11 +58,8 @@ def _get_item_quality_increase(item: Item) -> int:
     if item.name != BACKSTAGE_PASSES:
         return DEFAULT_APPRECIATION
 
-    pass_inflation_level = _get_pass_inflation_level(item.sell_in)
-    multiplier = PASS_INFLATION_TO_QUALITY_MULTIPLIER_MAP.get(
-        pass_inflation_level, -item.quality
-    )
-    return DEFAULT_APPRECIATION * multiplier
+    quality_increase = _get_appreciable_item_quality_increase(item)
+    return quality_increase
 
 
 def _is_item_expired(sell_in: int) -> bool:
@@ -70,7 +80,7 @@ def _get_expired_item_quality_increase(item: Item) -> int:
 class GildedRose(BaseModel):
     items: list[Item]
 
-    def update_items(self):
+    def update_items(self) -> None:
         for item in self.items:
             self._update_item(item)
 
